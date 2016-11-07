@@ -70,8 +70,49 @@ foreach ($files as $filename => $file) {
 	}
 }
 
+//Get and extract selected portfolio
+$characters = array();
+$statblock_content = "";
 if (isset($_POST['portfolio'])) {
+	//Create working directory
+	$portfolio_path = $config['working_directory'] . "/" . sha1($_POST['portfolio']);
+	if (!is_dir($portfolio_path)) {
+		mkdir($portfolio_path, 0777, true);
+	}
+	$file = $dropbox->GetMetadata($_POST['portfolio']);
+	$portfolio_file = $portfolio_path . "/" . $file->revision . ".zip";
+	if (!file_exists($portfolio_file)) {
+		$dropbox->DownloadFile($file, $portfolio_file);
+		//Load ZIP file
+		$zip = new ZipArchive();
+		$zip->open($portfolio_file);
+		$zip->extractTo($portfolio_path);
+		$zip->close();
+	}
+
+	//Read portfolio index
+	$portfolio_index = simplexml_load_file($portfolio_path . "/index.xml");
+	foreach ($portfolio_index->characters->character as $character) {
+		$characters[] = array(
+			'name'    => $character['name'],
+			'summary' => $character['summary']
+		);
+	}
 	
+	//Read statblock
+	if (isset($_POST['character'])) {
+		$character_index = intval($_POST['character']);
+		$character = $portfolio_index->characters->character[$character_index];
+		$format = "html";
+		if (isset($_POST['format'])) {
+			$format = $_POST['format'];
+		}
+		$statblock = $character->xpath("statblocks/statblock[@format='$format']");
+		if ($statblock != FALSE) {
+			$statblock_file = $portfolio_path . "/" . $statblock[0]['folder'] . "/" . $statblock[0]['filename'];
+			echo $statblock_file;
+		}
+	}
 }
 
 ?>
@@ -91,7 +132,9 @@ if (isset($_POST['portfolio'])) {
 						<select name="portfolio">
 							<?php
 							foreach($portfolios as $portfolio) {
-								echo "<option value=\"" . $portfolio . ">" . htmlspecialchars($portfolio) . "</option>";
+								$selected = isset($_POST['portfolio']) && $portfolio == $_POST['portfolio'];
+								$selected_attr = $selected ? " selected=\"selected\"" : "";
+								echo "<option value=\"" . htmlspecialchars($portfolio) . "\"" . $selected_attr . ">" . htmlspecialchars($portfolio) . "</option>\n";
 							}
 							?>
 						</select>
@@ -101,7 +144,13 @@ if (isset($_POST['portfolio'])) {
 					<td>Character:</td>
 					<td>
 						<select name="character">
-						
+						<?php
+						foreach ($characters as $index => $character) {
+							$selected = isset($_POST['character']) && $index == $_POST['character'];
+							$selected_attr = $selected ? " selected=\"selected\"" : "";
+							echo "<option value=\"" . $index . "\"" . $selected_attr . ">" . htmlspecialchars($character['name']) . "</option>\n";
+						}
+						?>
 						</select>
 					</td>
 				</tr>
@@ -122,5 +171,6 @@ if (isset($_POST['portfolio'])) {
 				</tr>
 			</table>
 		</form>
+		<h2>Statblock</h2>
 	</body>
 </html>

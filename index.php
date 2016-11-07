@@ -62,7 +62,13 @@ if(!$dropbox->IsAuthorized())
 }
 
 //Read portfolios from dropbox
-$files = $dropbox->GetFiles("/Apps/Hero Lab",true);
+if (empty($_SESSION['files'])) {
+	$files = $dropbox->GetFiles("/Apps/Hero Lab",true);
+	$_SESSION['files'] = $files;
+} else {
+	$files = $_SESSION['files'];
+}
+
 $portfolios = array();
 foreach ($files as $filename => $file) {
 	if (substr($filename, -4) == ".por") {

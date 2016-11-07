@@ -110,7 +110,20 @@ if (isset($_POST['portfolio'])) {
 		$statblock = $character->xpath("statblocks/statblock[@format='$format']");
 		if ($statblock != FALSE) {
 			$statblock_file = $portfolio_path . "/" . $statblock[0]['folder'] . "/" . $statblock[0]['filename'];
-			echo $statblock_file;
+			if ($format == 'html') {
+				$statblock_content = file_get_contents($statblock_file);
+				$content_begin = strpos($statblock_content, '<body>');
+				if ($content_begin > -1) {
+					$content_begin += 6;
+					$content_end = strpos($statblock_content, '</body>');
+					if ($content_end < $content_begin) {
+						$content_end = $content_begin;
+					}
+					$statblock_content = substr($statblock_content, $content_begin, -16);
+				}
+			} elseif ($format = 'text') {
+				$statblock_content = file_get_contents($statblock_file);
+			}
 		}
 	}
 }
@@ -159,8 +172,7 @@ if (isset($_POST['portfolio'])) {
 					<td>
 						<select name="format">
 							<option value="html">HTML</option>
-							<option value="text">Plain Text</option>
-							<option value="xml">XML</option>
+							<option value="text" <?=$_POST['format'] == 'text' ? "selected=\"selected\"" : "" ?>>Plain Text</option>
 						</select>
 					</td>
 				</tr>
@@ -172,5 +184,12 @@ if (isset($_POST['portfolio'])) {
 			</table>
 		</form>
 		<h2>Statblock</h2>
+		<?php
+			if ($_POST['format'] == 'html') {
+				echo "<p>$statblock_content</p>";
+			} else {
+				echo "<pre>$statblock_content</pre>";
+			}
+		?>
 	</body>
 </html>

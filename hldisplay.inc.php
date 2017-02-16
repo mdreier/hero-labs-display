@@ -54,7 +54,9 @@ class HLDisplay
    */
   function handleOauth() {
     //Access token is stored in the session if user has authenticated before.
-    $access_token = $_SESSION['oauth_access_token'];
+    if (isset($_SESSION['oauth_access_token'])) {
+      $access_token = $_SESSION['oauth_access_token'];
+    }
 
     if(!empty($access_token)) {
       //Set the access token for further use by the dropbox client.
@@ -89,9 +91,9 @@ class HLDisplay
     //Build return URL
     $return_url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."?auth_callback=1";
     //Dropbox OAuth URL is build by DropPHP
-  	$auth_url = $dropbox->BuildAuthorizeUrl($return_url);
+  	$auth_url = $this->dropbox->BuildAuthorizeUrl($return_url);
     //Generate request token and store in session for later use by handleOAuth()
-  	$request_token = $dropbox->GetRequestToken();
+  	$request_token = $this->dropbox->GetRequestToken();
   	$_SESSION['oauth_request_token'] = $request_token;
     //Redirect to authorization page
   	header('Location: ' . $auth_url);

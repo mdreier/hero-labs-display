@@ -24,6 +24,11 @@ $portfolios = $hldisplay->readPortfolios();
 $characters = array();
 $statblock_content = "";
 
+$format = "html";
+if (isset($_POST['format'])) {
+	$format = $_POST['format'];
+}
+
 if (isset($_POST['portfolio'])) {
 	$hldisplay->loadPortfolio($_POST['portfolio']);
 	$characters = $hldisplay->readCharacters();
@@ -31,10 +36,6 @@ if (isset($_POST['portfolio'])) {
 	//Read statblock
 	if (isset($_POST['character'])) {
 		$character_index = intval($_POST['character']);
-		$format = "html";
-		if (isset($_POST['format'])) {
-			$format = $_POST['format'];
-		}
 
 		$statblock_content = $hldisplay->readStatblock($character_index, $format);
 	}
@@ -84,7 +85,7 @@ if (isset($_POST['portfolio'])) {
 					<td>
 						<select name="format">
 							<option value="html">HTML</option>
-							<option value="text" <?=$_POST['format'] == 'text' ? "selected=\"selected\"" : "" ?>>Plain Text</option>
+							<option value="text" <?=$format == 'text' ? "selected=\"selected\"" : "" ?>>Plain Text</option>
 						</select>
 					</td>
 				</tr>
@@ -97,7 +98,7 @@ if (isset($_POST['portfolio'])) {
 		</form>
 		<h2>Statblock</h2>
 		<?php
-			if ($_POST['format'] == 'html') {
+			if ($format == 'html') {
 				echo "<p>$statblock_content</p>";
 			} else {
 				echo "<pre>$statblock_content</pre>";

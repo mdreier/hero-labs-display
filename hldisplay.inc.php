@@ -1,4 +1,5 @@
 <?php
+require_once("DropPHP/DropboxClient.php");
 
 /**
  * Hero Labs Display class.

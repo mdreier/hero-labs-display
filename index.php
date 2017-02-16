@@ -2,7 +2,6 @@
 
 session_start();
 
-require_once("DropPHP/DropboxClient.php");
 require_once("config.php");
 require_once("hldisplay.inc.php");
 

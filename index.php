@@ -4,119 +4,41 @@ session_start();
 
 require_once("DropPHP/DropboxClient.php");
 require_once("config.php");
+require_once("hldisplay.inc.php");
 
-$dropbox = new DropboxClient(array(
-	'app_key' => $config['dropbox_app_key'],
-	'app_secret' => $config['dropbox_app_secret'],
-	'app_full_access' => true,
-	'proxy_url' => $config['proxy_url'],
-	'proxy_user' => $config['proxy_user'],
-	'proxy_password' => $config['proxy_password'],
-), 'en');
-$dropbox->SetUseCUrl(true);
-
-$access_token = $_SESSION['oauth_access_token'];
-
-if(!empty($access_token)) {
-	$dropbox->SetAccessToken($access_token);
-}
-elseif(!empty($_GET['auth_callback'])) // are we coming from dropbox's auth page?
-{
-	// then load our previosly created request token
-	$request_token = $_SESSION['oauth_request_token'];
-	if(empty($request_token)) die('Request token not found!');
-
-	// get & store access token, the request token is not needed anymore
-	$access_token = $dropbox->GetAccessToken($request_token);
-	$_SESSION['oauth_access_token'] = $access_token;
-	unset($_SESSION['oauth_request_token']);
-}
+$hldisplay = new HLDisplay($config);
+$hldisplay->initializeDropboxClient();
+$hldisplay->handleOAuth();
 
 // checks if access token is required
-if(!$dropbox->IsAuthorized())
+if(!$hldisplay->isAuthorized())
 {
 	// redirect user to dropbox auth page
-	$return_url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."?auth_callback=1";
-	$auth_url = $dropbox->BuildAuthorizeUrl($return_url);
-	$request_token = $dropbox->GetRequestToken();
-	$_SESSION['oauth_request_token'] = $request_token;
-	header('Location: ' . $auth_url);
-	die("Authentication required. <a href='$auth_url'>Click here</a> if you are not redirected automatically.");
+	$hldisplay->redirectToAuthPage();
 }
 
 //Read portfolios from dropbox
-if (empty($_SESSION['files'])) {
-	$files = $dropbox->GetFiles("/Apps/Hero Lab",true);
-	$_SESSION['files'] = $files;
-} else {
-	$files = $_SESSION['files'];
-}
-
-$portfolios = array();
-foreach ($files as $filename => $file) {
-	if (substr($filename, -4) == ".por") {
-		$portfolios[] = $filename;
-	}
-}
+$portfolios = $hldisplay->readPortfolios();
 
 //Get and extract selected portfolio
 $characters = array();
 $statblock_content = "";
-if (isset($_POST['portfolio'])) {
-	//Create working directory
-	$portfolio_path = $config['working_directory'] . "/" . sha1($_POST['portfolio']);
-	if (!is_dir($portfolio_path)) {
-		mkdir($portfolio_path, 0777, true);
-	}
-	$file = $dropbox->GetMetadata($_POST['portfolio']);
-	$portfolio_file = $portfolio_path . "/" . $file->revision . ".zip";
-	if (!file_exists($portfolio_file)) {
-		$dropbox->DownloadFile($file, $portfolio_file);
-		//Load ZIP file
-		$zip = new ZipArchive();
-		$zip->open($portfolio_file);
-		$zip->extractTo($portfolio_path);
-		$zip->close();
-	}
 
-	//Read portfolio index
-	$portfolio_index = simplexml_load_file($portfolio_path . "/index.xml");
-	foreach ($portfolio_index->characters->character as $character) {
-		$characters[] = array(
-			'name'    => $character['name'],
-			'summary' => $character['summary']
-		);
-	}
+if (isset($_POST['portfolio'])) {
+	$hldisplay->loadPortfolio($_POST['portfolio']);
+	$characters = $hldisplay->readCharacters();
 
 	//Read statblock
 	if (isset($_POST['character'])) {
 		$character_index = intval($_POST['character']);
-		$character = $portfolio_index->characters->character[$character_index];
 		$format = "html";
 		if (isset($_POST['format'])) {
 			$format = $_POST['format'];
 		}
-		$statblock = $character->xpath("statblocks/statblock[@format='$format']");
-		if ($statblock != FALSE) {
-			$statblock_file = $portfolio_path . "/" . $statblock[0]['folder'] . "/" . $statblock[0]['filename'];
-			if ($format == 'html') {
-				$statblock_content = file_get_contents($statblock_file);
-				$content_begin = strpos($statblock_content, '<body>');
-				if ($content_begin > -1) {
-					$content_begin += 6;
-					$content_end = strpos($statblock_content, '</body>');
-					if ($content_end < $content_begin) {
-						$content_end = $content_begin;
-					}
-					$statblock_content = substr($statblock_content, $content_begin, -16);
-				}
-			} elseif ($format = 'text') {
-				$statblock_content = file_get_contents($statblock_file);
-			}
-		}
+
+		$statblock_content = $hldisplay->readStatblock($character_index, $format);
 	}
 }
-
 ?>
 
 <html>

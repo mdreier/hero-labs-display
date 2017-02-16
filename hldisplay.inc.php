@@ -102,7 +102,7 @@ class HLDisplay
 
   /**
    * Read portfolios available in the user's dropbox. Reads only .por files
-   * in the Apps/Hero Lab directory.
+   * in the search path specified in the configuration.
    *
    * @return string[] List of portfolio (file) names. If no portfolios are
    * stored in the user's dropbox, an empty array is returned.
@@ -110,7 +110,7 @@ class HLDisplay
   function readPortfolios() {
     //List of portfolio files is cached to improve performance
     if (empty($_SESSION['files'])) {
-    	$files = $this->dropbox->GetFiles("/Apps/Hero Lab",true);
+    	$files = $this->dropbox->GetFiles($this->config['search_path'],true);
     	$_SESSION['files'] = $files;
     } else {
     	$files = $_SESSION['files'];

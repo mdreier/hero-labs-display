@@ -5,23 +5,6 @@ session_start();
 require_once("DropPHP/DropboxClient.php");
 require_once("config.php");
 
-/*
-$portfolio = "https://www.dropbox.com/s/n7qjcki50dr6fbc/Skulls%20%26%20Shackles.por?dl=1";
-$portfolio_hash = sha1($portfolio);
-$portfolio_cache = dirname(__FILE__) . "/" . $portfolio_hash . ".cache.zip";
-echo "Writing to " . $portfolio_cache;
-
-$ch = curl_init($portfolio);
-$fp = fopen($portfolio_cache, "w");
-
-curl_setopt($ch, CURLOPT_FILE, $fp);
-curl_setopt($ch, CURLOPT_HEADER, 0);
-
-curl_exec($ch);
-curl_close($ch);
-fclose($fp);
-*/
-
 $dropbox = new DropboxClient(array(
 	'app_key' => $config['dropbox_app_key'],
 	'app_secret' => $config['dropbox_app_secret'],
@@ -42,9 +25,9 @@ elseif(!empty($_GET['auth_callback'])) // are we coming from dropbox's auth page
 	// then load our previosly created request token
 	$request_token = $_SESSION['oauth_request_token'];
 	if(empty($request_token)) die('Request token not found!');
-	
+
 	// get & store access token, the request token is not needed anymore
-	$access_token = $dropbox->GetAccessToken($request_token);	
+	$access_token = $dropbox->GetAccessToken($request_token);
 	$_SESSION['oauth_access_token'] = $access_token;
 	unset($_SESSION['oauth_request_token']);
 }
@@ -104,7 +87,7 @@ if (isset($_POST['portfolio'])) {
 			'summary' => $character['summary']
 		);
 	}
-	
+
 	//Read statblock
 	if (isset($_POST['character'])) {
 		$character_index = intval($_POST['character']);

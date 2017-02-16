@@ -44,6 +44,7 @@ if (isset($_POST['portfolio'])) {
 <html>
 	<head>
 		<title>HeroLabs Portfolio Display</title>
+		<meta charset="utf-8"/>
 	</head>
 	<body>
 		<h1>HeroLabs Portfolio Display</h1>

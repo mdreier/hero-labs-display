@@ -61,15 +61,36 @@ class HLDisplay
    */
   function initializeDropboxClient() {
     $this->dropbox = new DropboxClient(array(
-    	'app_key' => $this->config['dropbox_app_key'],
-    	'app_secret' => $this->config['dropbox_app_secret'],
+    	'app_key' => $this->getConfig('dropbox_app_key', '', true),
+    	'app_secret' => $this->getConfig('dropbox_app_secret', '', true),
     	'app_full_access' => true,
-    	'proxy_url' => $this->config['proxy_url'],
-    	'proxy_user' => $this->config['proxy_user'],
-    	'proxy_password' => $this->config['proxy_password'],
+    	'proxy_url' => $this->getConfig('proxy_url'),
+    	'proxy_user' => $this->getConfig('proxy_user'),
+    	'proxy_password' => $this->getConfig('proxy_password'),
     ), 'en');
     //Use CUrl for proxy support.
     $this->dropbox->SetUseCUrl(true);
+  }
+
+  /**
+   * Get a configuration value.
+   * @param string $key Key of the configuration value.
+   * @param string $default Default value to be returned if the key is
+   * not set in the config. Defaults to an empty string.
+   * @param boolean $required Setting this to TRUE causes the script to fail
+   * if the value is not set.
+   * @return string The configuration value for the given key, or the
+   * default value if the key is not set.
+   */
+  function getConfig($key, $default = '', $required = false) {
+    if (isset($this->config[$key])) {
+      return $this->config[$key];
+    } else {
+      if ($required) {
+        die("Required configuration $key is not set");
+      }
+      return $default;
+    }
   }
 
   /**
@@ -136,7 +157,7 @@ class HLDisplay
     if (empty($_SESSION['files'])) {
       //Read search paths from config, create array if only single
       //path is given.
-      $search_paths = $this->config['search_path'];
+      $search_paths = $this->getConfig('search_path', array());
       if (!is_array($search_paths)) {
         $search_paths = array($search_paths);
       }
@@ -167,7 +188,7 @@ class HLDisplay
    */
   function loadPortfolio($portfolio_name) {
     //Create working directory based on hash of portfolio name
-  	$this->portfolio_path = $this->config['working_directory'] . "/" . sha1($portfolio_name);
+  	$this->portfolio_path = $this->getConfig('working_directory', '', true) . "/" . sha1($portfolio_name);
   	if (!is_dir($this->portfolio_path)) {
   		mkdir($this->portfolio_path, 0777, true);
   	}

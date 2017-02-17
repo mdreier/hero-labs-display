@@ -118,6 +118,7 @@ if (isset($_POST['portfolio'])) {
 					</td>
 				</tr>
 			</table>
+			<p>Press "Update" after selecting a new value to update the other lists and the statblock.</p>
 		</form>
 		<h2>Statblock</h2>
 		  <section class="statblock">

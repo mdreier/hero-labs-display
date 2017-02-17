@@ -2,7 +2,8 @@
 This app allows you to display Hero Labs portfolios stored in your dropbox directly in the browser.
 
 ## License
-This project is licensed under the terms of the MIT license.
+This project, with the exception of the Gandhi font, is licensed under the terms of the MIT license.
+The Gandhi font is licensed under the terms of the Librerias Gandhi S.A. de C.V. Font License.
 
 ## Using the app
 

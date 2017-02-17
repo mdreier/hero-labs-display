@@ -1,0 +1,43 @@
+@font-face {
+    font-family: 'gandhi';
+    font-weight: bold;
+    font-style: normal;
+    src: url('GandhiSans-Bold-webfont.eot');
+    src: url('GandhiSans-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('GandhiSans-Bold-webfont.woff') format('woff'),
+         url('GandhiSans-Bold-webfont.ttf') format('truetype'),
+         url('GandhiSans-Bold-webfont.svg#gandhi_sansbold') format('svg');
+}
+
+@font-face {
+    font-family: 'gandhi';
+    font-weight: bold;
+    font-style: italic;
+    src: url('GandhiSans-BoldItalic-webfont.eot');
+    src: url('GandhiSans-BoldItalic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('GandhiSans-BoldItalic-webfont.woff') format('woff'),
+         url('GandhiSans-BoldItalic-webfont.ttf') format('truetype'),
+         url('GandhiSans-BoldItalic-webfont.svg#gandhi_sansbold_italic') format('svg');
+}
+
+@font-face {
+    font-family: 'gandhi';
+    font-weight: normal;
+    font-style: italic;
+    src: url('GandhiSans-Italic-webfont.eot');
+    src: url('GandhiSans-Italic-webfont.eot?#iefix') format('embedded-opentype'),
+         url('GandhiSans-Italic-webfont.woff') format('woff'),
+         url('GandhiSans-Italic-webfont.ttf') format('truetype'),
+         url('GandhiSans-Italic-webfont.svg#gandhi_sansitalic') format('svg');
+}
+
+@font-face {
+    font-family: 'gandhi';
+    font-weight: normal;
+    font-style: normal;
+    src: url('GandhiSans-Regular-webfont.eot');
+    src: url('GandhiSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('GandhiSans-Regular-webfont.woff') format('woff'),
+         url('GandhiSans-Regular-webfont.ttf') format('truetype'),
+         url('GandhiSans-Regular-webfont.svg#gandhi_sansregular') format('svg');
+}

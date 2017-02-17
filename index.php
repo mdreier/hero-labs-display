@@ -67,6 +67,8 @@ if (isset($_POST['portfolio'])) {
 	<head>
 		<title>HeroLabs Portfolio Display</title>
 		<meta charset="utf-8"/>
+		<link rel="stylesheet" href="font/gandhi.css" type="text/css" charset="utf-8" />
+		<link rel="stylesheet" href="hldisplay.css" type="text/css" charset="utf-8" />
 	</head>
 	<body>
 		<h1>HeroLabs Portfolio Display</h1>
@@ -118,12 +120,14 @@ if (isset($_POST['portfolio'])) {
 			</table>
 		</form>
 		<h2>Statblock</h2>
-		<?php
-			if ($format == 'html') {
-				echo "<p>$statblock_content</p>";
-			} else {
-				echo "<pre>$statblock_content</pre>";
-			}
-		?>
+		  <section class="statblock">
+			<?php
+				if ($format == 'html') {
+					echo "<p>$statblock_content</p>";
+				} else {
+					echo "<pre>$statblock_content</pre>";
+				}
+			?>
+		</section>
 	</body>
 </html>

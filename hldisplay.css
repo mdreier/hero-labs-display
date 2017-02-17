@@ -1,3 +1,33 @@
+/*
+ * Statblock section.
+ */
 .statblock {
-  font-family: "gandhi";
+  font-family: "gandhi", arial, sans-serif;
+  max-width: 1024px;
+}
+
+/*
+ * Section headers in statblock.
+ */
+hr + b:nth-child(odd) {
+  color: white;
+  background-color: black;
+  display: block;
+  margin-bottom: -1em;
+}
+
+/*
+ * Hide seperators.
+ */
+hr {
+  visibility: hidden;
+  display: none;
+}
+
+/*
+ * Copyright footer.
+ */
+
+p:last-child {
+  font-size: 75%;
 }

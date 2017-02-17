@@ -123,7 +123,7 @@ if (isset($_POST['portfolio'])) {
 		  <section class="statblock">
 			<?php
 				if ($format == 'html') {
-					echo "<p>$statblock_content</p>";
+					echo "$statblock_content";
 				} else {
 					echo "<pre>$statblock_content</pre>";
 				}

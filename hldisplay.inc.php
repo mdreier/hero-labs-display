@@ -134,7 +134,16 @@ class HLDisplay
   function readPortfolios() {
     //List of portfolio files is cached to improve performance
     if (empty($_SESSION['files'])) {
-    	$files = $this->dropbox->GetFiles($this->config['search_path'],true);
+      //Read search paths from config, create array if only single
+      //path is given.
+      $search_paths = $this->config['search_path'];
+      if (!is_array($search_paths)) {
+        $search_paths = array($search_paths);
+      }
+      $files = array();
+      foreach($search_paths as $path) {
+    	   $files += $this->dropbox->GetFiles($path, true);
+      }
     	$_SESSION['files'] = $files;
     } else {
     	$files = $_SESSION['files'];

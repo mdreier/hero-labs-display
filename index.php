@@ -22,12 +22,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+use \HLDisplay as hl;
+
 session_start();
 
 require_once("config.php");
 require_once("hldisplay.inc.php");
 
-$hldisplay = new HLDisplay($config);
+$hldisplay = new hl\HLDisplay($config);
 $hldisplay->initializeDropboxClient();
 $hldisplay->handleOAuth();
 

@@ -22,6 +22,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+namespace HLDisplay;
+
 require_once("DropPHP/DropboxClient.php");
 
 /**
@@ -60,7 +62,7 @@ class HLDisplay
    * Initialize the internal DropPHP instance.
    */
   function initializeDropboxClient() {
-    $this->dropbox = new DropboxClient(array(
+    $this->dropbox = new \DropboxClient(array(
     	'app_key' => $this->getConfig('dropbox_app_key', '', true),
     	'app_secret' => $this->getConfig('dropbox_app_secret', '', true),
     	'app_full_access' => true,

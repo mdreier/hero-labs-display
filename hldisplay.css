@@ -13,7 +13,7 @@ body {
 /*
  * Section headers in statblock.
  */
-hr + b:nth-child(odd) {
+hr:nth-of-type(2n+1) + b {
   color: white;
   background-color: black;
   display: block;

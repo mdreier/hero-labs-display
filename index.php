@@ -27,10 +27,10 @@ use \HLDisplay as hl;
 session_start();
 
 require_once("config.php");
-require_once("hldisplay.inc.php");
+require_once("hldisplay/hldisplay.class.php");
 
-$hldisplay = new hl\HLDisplay($config);
-$hldisplay->initializeDropboxClient();
+hl\Configuration::initialize($config);
+$hldisplay = new hl\HLDisplay();
 $hldisplay->handleOAuth();
 
 // checks if access token is required
@@ -41,7 +41,7 @@ if(!$hldisplay->isAuthorized())
 }
 
 //Read portfolios from dropbox
-$portfolios = $hldisplay->readPortfolios();
+$portfolios = hl\Portfolio::readPortfolios();
 
 //Get and extract selected portfolio
 $characters = array();
@@ -52,15 +52,18 @@ if (isset($_POST['format'])) {
 	$format = $_POST['format'];
 }
 
-if (isset($_POST['portfolio'])) {
-	$hldisplay->loadPortfolio($_POST['portfolio']);
-	$characters = $hldisplay->readCharacters();
+if (isset($_POST['portfolio_index'])) {
+	$portfolio_index = intval($_POST['portfolio_index']);
+	$selectedPortfolio = $portfolios[$portfolio_index];
+	$selectedPortfolio->load();
+	$characters = $selectedPortfolio->getCharacters();
 
 	//Read statblock
 	if (isset($_POST['character'])) {
 		$character_index = intval($_POST['character']);
 
-		$statblock_content = $hldisplay->readStatblock($character_index, $format);
+		$selectedCharacter = $characters[$character_index];
+		$statblock_content = $selectedCharacter->getStatblock($format);
 	}
 }
 ?>
@@ -80,12 +83,12 @@ if (isset($_POST['portfolio'])) {
 				<tr>
 					<td>Portfolio:</td>
 					<td>
-						<select name="portfolio">
+						<select name="portfolio_index">
 							<?php
-							foreach($portfolios as $portfolio) {
-								$selected = isset($_POST['portfolio']) && $portfolio == $_POST['portfolio'];
+							foreach($portfolios as $index => $portfolio) {
+								$selected = isset($_POST['portfolio_index']) && $index == $_POST['portfolio_index'];
 								$selected_attr = $selected ? " selected=\"selected\"" : "";
-								echo "<option value=\"" . htmlspecialchars($portfolio) . "\"" . $selected_attr . ">" . htmlspecialchars($portfolio) . "</option>\n";
+								echo "<option value=\"$index\"" . $selected_attr . ">" . htmlspecialchars($portfolio->getDisplayName()) . "</option>\n";
 							}
 							?>
 						</select>
@@ -99,7 +102,7 @@ if (isset($_POST['portfolio'])) {
 						foreach ($characters as $index => $character) {
 							$selected = isset($_POST['character']) && $index == $_POST['character'];
 							$selected_attr = $selected ? " selected=\"selected\"" : "";
-							echo "<option value=\"" . $index . "\"" . $selected_attr . ">" . htmlspecialchars($character['name']) . "</option>\n";
+							echo "<option value=\"" . $index . "\"" . $selected_attr . ">" . htmlspecialchars($character->getName()) . "</option>\n";
 						}
 						?>
 						</select>

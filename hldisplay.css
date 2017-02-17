@@ -28,10 +28,13 @@ hr {
   display: none;
 }
 
+pre {
+ white-space: pre-wrap;
+}
+
 /*
  * Copyright footer.
  */
-
 p:last-child {
   font-size: 75%;
 }

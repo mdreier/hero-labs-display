@@ -38,7 +38,8 @@ $config = array(
 
 	//Search parameters
 	'result_size'			=> 25,
-	'search_path'			=> array('/Apps/Hero Lab')
+	'search_path'			=> array('/Apps/Hero Lab'),
+	'result_with_path' => false
 );
 
 ?>

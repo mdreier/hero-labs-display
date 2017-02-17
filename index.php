@@ -88,7 +88,7 @@ if (isset($_POST['portfolio_index'])) {
 							foreach($portfolios as $index => $portfolio) {
 								$selected = isset($_POST['portfolio_index']) && $index == $_POST['portfolio_index'];
 								$selected_attr = $selected ? " selected=\"selected\"" : "";
-								echo "<option value=\"$index\"" . $selected_attr . ">" . htmlspecialchars($portfolio->getDisplayName()) . "</option>\n";
+								echo "<option value=\"$index\"" . $selected_attr . ">" . htmlspecialchars($portfolio->getDisplayName(hl\Configuration::get('result_with_path', true))) . "</option>\n";
 							}
 							?>
 						</select>

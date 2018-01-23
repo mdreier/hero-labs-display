@@ -53,25 +53,46 @@ class HLDisplay
    * HTTP session.
    */
   function handleOauth() {
+    //Calculate return URL for OAuth
+    $return_url = $this->getProtocol() . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . "?auth_redirect=1";
+    
     //Access token is stored in the session if user has authenticated before.
-    if (isset($_SESSION['oauth_access_token'])) {
-      $access_token = $_SESSION['oauth_access_token'];
+    if (isset($_SESSION['oauth_bearer_token'])) {
+      $bearer_token = $_SESSION['oauth_bearer_token'];
     }
 
-    if(!empty($access_token)) {
+    if(!empty($bearer_token)) {
       //Set the access token for further use by the dropbox client.
-    	Configuration::getDropbox()->SetAccessToken($access_token);
+      Configuration::getDropbox()->SetBearerToken($bearer_token);
     }
-    elseif(!empty($_GET['auth_callback'])) // are we coming from dropbox's auth page?
+    elseif(!empty($_GET['auth_redirect'])) // are we coming from dropbox's auth page?
     {
-    	// then load our previosly created request token
-    	$request_token = $_SESSION['oauth_request_token'];
-    	if(empty($request_token)) die('Request token not found!');
+      // then load our previosly created request token
+      $bearer_token = Configuration::getDropbox()->GetBearerToken(null, $return_url);
 
-    	// get & store access token, the request token is not needed anymore
-    	$access_token = Configuration::getDropbox()->GetAccessToken($request_token);
-    	$_SESSION['oauth_access_token'] = $access_token;
-    	unset($_SESSION['oauth_request_token']);
+      if(empty($bearer_token)) die('Bearer token not found!');
+      $_SESSION['oauth_bearer_token'] = $bearer_token;
+    }
+    elseif(!Configuration::getDropbox()->IsAuthorized())
+    {
+      //Redirect to Dropbox authorization page
+      $auth_url = Configuration::getDropbox()->BuildAuthorizeUrl($return_url);
+      header("Location: " . $auth_url);
+      die("Authorization required. Click <a href=\"" . $auth_url . "\">here</a> to redirect to Dropbox.");
+    }
+  }
+  
+  /**
+   * Get the correct protocol string for the current script execution.
+   * @return string The protocol, http or https.
+   */
+  function getProtocol()
+  {
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on")
+    {
+      return "https";
+    } else {
+      return "http";
     }
   }
 
@@ -81,23 +102,6 @@ class HLDisplay
    */
   function isAuthorized() {
     return Configuration::getDropbox()->IsAuthorized();
-  }
-
-  /**
-   * Redirect the user to the Dropbox OAuth authorization page. This terminates
-   * processing.
-   */
-  function redirectToAuthPage() {
-    //Build return URL
-    $return_url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."?auth_callback=1";
-    //Dropbox OAuth URL is build by DropPHP
-  	$auth_url = Configuration::getDropbox()->BuildAuthorizeUrl($return_url);
-    //Generate request token and store in session for later use by handleOAuth()
-  	$request_token = Configuration::getDropbox()->GetRequestToken();
-  	$_SESSION['oauth_request_token'] = $request_token;
-    //Redirect to authorization page
-  	header('Location: ' . $auth_url);
-  	die("Authentication required. <a href='$auth_url'>Click here</a> if you are not redirected automatically.");
   }
 }
 ?>

@@ -85,6 +85,6 @@ class Configuration {
     	'proxy_password' => Configuration::get('proxy_password'),
     ), 'en');
     //Use CUrl for proxy support.
-    self::$dropbox->SetUseCUrl(true);
+    //self::$dropbox->SetUseCUrl(true);
   }
 }

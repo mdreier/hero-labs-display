@@ -112,7 +112,7 @@ class Portfolio {
    * @return string The portfolio path inside dropbox.
    */
   public function getDropboxPath() {
-    return $this->path;
+    return '/' . $this->path;
   }
 
   /**
@@ -164,7 +164,7 @@ class Portfolio {
        directory for later access.
     */
     $file = $this->dropbox->GetMetadata($this->getDropboxPath());
-    $portfolio_file = $workdir . "/" . $file->revision . ".zip";
+    $portfolio_file = $workdir . "/" . $file->rev . ".zip";
     if (!file_exists($portfolio_file)) {
       $this->dropbox->DownloadFile($file, $portfolio_file);
       //Extract ZIP file to working directory.
